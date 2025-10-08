@@ -1,7 +1,53 @@
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow, app, ipcMain } from "electron";
 
-import path from 'node:path';
-import started from 'electron-squirrel-startup';
+import { exec } from "node:child_process";
+import path from "node:path";
+import started from "electron-squirrel-startup";
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+const lcuData = {
+  username: "riot",
+  password: "",
+  port: "",
+  success: false,
+};
+
+function getLcuData(callback: (data: typeof lcuData) => void) {
+  const command = `powershell -Command "Get-CimInstance Win32_Process -Filter \\"Name = 'LeagueClientUx.exe'\\" | Select-Object CommandLine | Format-List"`;
+
+  exec(command, (err, stdout, stderr) => {
+    if (err || !stdout || stderr) {
+      console.log("Error: ", err);
+      callback({
+        username: "riot",
+        password: "",
+        port: "",
+        success: false,
+      });
+      return;
+    }
+
+    const output = stdout
+      .replace(/--\s*(\S+)/g, "--$1")
+      .replace(/\s+/g, "")
+      .replace(/\r?\n|\r/g, "")
+      .trim();
+
+    lcuData.password =
+      output.match(/--remoting-auth-token=([A-Za-z0-9\-_]+)/)[1] != "null"
+        ? output.match(/--remoting-auth-token=([A-Za-z0-9\-_]+)/)[1]
+        : null;
+    lcuData.port = output.match(/--app-port=([0-9]+)/)[1] != "null" ? output.match(/--app-port=([0-9]+)/)[1] : null;
+
+    callback({
+      username: "riot",
+      password: lcuData.password,
+      port: lcuData.port,
+      success: true,
+    });
+  });
+}
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -13,42 +59,168 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    maxWidth: 800,
-    maxHeight: 600,
-    title: 'LOL AutoPick - Tortudereli',
+    minWidth: 800,
+    minHeight: 600,
+    title: "LOL AutoPick - Tortudereli",
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, "preload.js"),
     },
   });
 
-  // and load the index.html of the app.
+  let appRun = false;
+
+  setInterval(() => {
+    getLcuData((x) => {
+      if (x.success) {
+        const { password, port } = x;
+        if (port != "" && password != "" && !appRun) {
+          startApp();
+          appRun = true;
+          console.log("League of Legends açıldı");
+        } else if (port == "" || (password == "" && appRun)) {
+          stopApp();
+          appRun = false;
+          console.log("League of Legends kapandı");
+        }
+      } else {
+        stopApp();
+        appRun = false;
+        console.log("League of Legends kapandı");
+      }
+    });
+  }, 2000);
+
+  function startApp() {
+    if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+      mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
+    } else {
+      mainWindow.loadFile(path.join(__dirname, `../../index.html`));
+    }
+  }
+
+  function stopApp() {
+    if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+      mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL + "/waiting-lol.html");
+    } else {
+      mainWindow.loadFile(path.join(__dirname, `../../waiting-lol.html`));
+    }
+  }
+
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
+    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL + "/waiting-lol.html");
   } else {
-    mainWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
-    );
+    mainWindow.loadFile(path.join(__dirname, `../../waiting-lol.html`));
   }
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
+  mainWindow.maximize();
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on("ready", () => {
+  ipcMain.handle("get-owned-champions", async () => {
+    const uri = `https://127.0.0.1:${lcuData.port}/lol-champions/v1/owned-champions-minimal`;
+
+    const champions = await fetch(uri, {
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${lcuData.username}:${lcuData.password}`).toString("base64")}`,
+      },
+    })
+      .then((res) => res.json())
+      .catch((err: Error) => {
+        console.log(err.message);
+        return [];
+      });
+
+    return champions;
+  });
+
+  ipcMain.handle("auto-pick", async (_, banChampionId, pickChampionId) => {
+    console.log("renderer auto-pick");
+    const session = await fetch(`https://127.0.0.1:${lcuData.port}/lol-lobby-team-builder/champ-select/v1/session`, {
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${lcuData.username}:${lcuData.password}`).toString("base64")}`,
+      },
+    })
+    if (session.status !== 200) {
+      return;
+    }
+    const sessionData = await session.json();
+    
+    let banActionId = null;
+    let pickActionId = null;
+
+    sessionData.actions.forEach((action: any) => {
+      action.forEach((action: any) => {
+        if (action.type === "ban" && action.actorCellId === sessionData.localPlayerCellId) {
+          banActionId = action.id;
+        }
+        if (action.type === "pick" && action.actorCellId === sessionData.localPlayerCellId) {
+          pickActionId = action.id;
+        }
+      });
+    });
+
+    console.log("banActionId", banActionId);
+    console.log("pickActionId", pickActionId);
+
+    if (banActionId) {
+      const patchBan = await fetch(
+        `https://127.0.0.1:${lcuData.port}/lol-lobby-team-builder/champ-select/v1/session/actions/${banActionId}`,
+        {
+          headers: {
+            Authorization: `Basic ${Buffer.from(`${lcuData.username}:${lcuData.password}`).toString("base64")}`,
+          },
+          method: "PATCH",
+          body: JSON.stringify({
+            championId: banChampionId,
+            completed: true,
+          }),
+        }
+      );
+      console.log("patchBan", patchBan);
+      if (patchBan.status !== 204) {
+        console.log("Ban patch failed", patchBan.status);
+      }
+    }
+
+    if (pickActionId) {
+      const patchPick = await fetch(
+        `https://127.0.0.1:${lcuData.port}/lol-lobby-team-builder/champ-select/v1/session/actions/${pickActionId}`,
+        {
+          headers: {
+            Authorization: `Basic ${Buffer.from(`${lcuData.username}:${lcuData.password}`).toString("base64")}`,
+          },
+          method: "PATCH",
+          body: JSON.stringify({
+            championId: pickChampionId,
+            completed: true,
+          }),
+        }
+      );
+      console.log("patchPick", patchPick);
+      if (patchPick.status !== 204) {
+        console.log("Pick patch failed", patchPick.status);
+      }
+    }
+  });
+
+  createWindow();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
 
-app.on('activate', () => {
+app.on("activate", () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
