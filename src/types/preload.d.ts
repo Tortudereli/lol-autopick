@@ -40,6 +40,8 @@ declare global {
       autoPick: (banChampionId: number, pickChampionId: number) => Promise<void>;
       pickSuccess: (callback: () => void) => void;
       banSuccess: (callback: () => void) => void;
+      autoAccept: () => Promise<void>;
+      autoAcceptSuccess: (callback: () => void) => void;
     };
   }
 }

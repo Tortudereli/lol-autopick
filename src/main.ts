@@ -124,12 +124,8 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
   ipcMain.handle("get-owned-champions", async () => {
-    const uri = `https://127.0.0.1:${lcuData.port}/lol-champions/v1/owned-champions-minimal`;
-
-    const champions = await fetch(uri, {
-      headers: {
-        Authorization: `Basic ${Buffer.from(`${lcuData.username}:${lcuData.password}`).toString("base64")}`,
-      },
+    const champions = await fetchApi("/lol-champions/v1/owned-champions-minimal", {
+      headers: { "Content-Type": "application/json" },
     })
       .then((res) => res.json())
       .catch((err: Error) => {
@@ -140,28 +136,23 @@ app.on("ready", () => {
     return champions;
   });
 
-  ipcMain.handle("auto-pick", async (_, banChampionId: number, pickChampionId: number)  => {
-    const session = await fetch(`https://127.0.0.1:${lcuData.port}/lol-lobby-team-builder/champ-select/v1/session`, {
-      headers: {
-        Authorization: `Basic ${Buffer.from(`${lcuData.username}:${lcuData.password}`).toString("base64")}`,
-      },
+  ipcMain.handle("auto-pick", async (_, banChampionId: number, pickChampionId: number) => {
+    const session = await fetchApi(`/lol-lobby-team-builder/champ-select/v1/session`, {
+      headers: { "Content-Type": "application/json" },
     });
 
     if (session.status !== 200) {
       return;
     }
     const sessionData = await session.json();
-    if (sessionData.timer.phase !== "BAN_PICK") {
-      return;
-    }
-    
+
     let banActionId = null;
     let pickActionId = null;
     let banActionIsInProgress = false;
     let pickActionIsInProgress = false;
 
     sessionData.actions.forEach((action: any) => {
-      action.forEach((action: any) => {
+      action.forEach(async (action: any) => {
         if (action.type === "ban" && action.actorCellId === sessionData.localPlayerCellId) {
           banActionId = action.id;
           banActionIsInProgress = action.isInProgress;
@@ -169,25 +160,35 @@ app.on("ready", () => {
         if (action.type === "pick" && action.actorCellId === sessionData.localPlayerCellId) {
           pickActionId = action.id;
           pickActionIsInProgress = action.isInProgress;
+          if (action.championId === 0) {
+            const showPick = await fetchApi(`/lol-lobby-team-builder/champ-select/v1/session/actions/${action.id}`, {
+              headers: { "Content-Type": "application/json" },
+              method: "PATCH",
+              body: JSON.stringify({
+                championId: pickChampionId,
+              }),
+            });
+            if (showPick.status !== 204) {
+              console.log("Show pick patch failed", showPick.status);
+            }
+          }
         }
       });
     });
 
+    if (sessionData.timer.phase !== "BAN_PICK") {
+      return;
+    }
+
     if (banActionId !== null && banChampionId !== 0 && banActionIsInProgress) {
-      const patchBan = await fetch(
-        `https://127.0.0.1:${lcuData.port}/lol-lobby-team-builder/champ-select/v1/session/actions/${banActionId}`,
-        {
-          headers: {
-            Authorization: `Basic ${Buffer.from(`${lcuData.username}:${lcuData.password}`).toString("base64")}`,
-            "Content-Type": "application/json",
-          },
-          method: "PATCH",
-          body: JSON.stringify({
-            championId: banChampionId,
-            completed: true,
-          }),
-        }
-      )
+      const patchBan = await fetchApi(`/lol-lobby-team-builder/champ-select/v1/session/actions/${banActionId}`, {
+        headers: { "Content-Type": "application/json" },
+        method: "PATCH",
+        body: JSON.stringify({
+          championId: banChampionId,
+          completed: true,
+        }),
+      });
       if (patchBan.status !== 204) {
         console.log("Ban patch failed", patchBan.status);
       }
@@ -197,20 +198,14 @@ app.on("ready", () => {
     }
 
     if (pickActionId !== null && pickChampionId !== 0 && pickActionIsInProgress) {
-      const patchPick = await fetch(
-        `https://127.0.0.1:${lcuData.port}/lol-lobby-team-builder/champ-select/v1/session/actions/${pickActionId}`,
-        {
-          headers: {
-            Authorization: `Basic ${Buffer.from(`${lcuData.username}:${lcuData.password}`).toString("base64")}`,
-            "Content-Type": "application/json",
-          },
-          method: "PATCH",
-          body: JSON.stringify({
-            championId: pickChampionId,
-            completed: true,
-          }),
-        }
-      )
+      const patchPick = await fetchApi(`/lol-lobby-team-builder/champ-select/v1/session/actions/${pickActionId}`, {
+        headers: { "Content-Type": "application/json" },
+        method: "PATCH",
+        body: JSON.stringify({
+          championId: pickChampionId,
+          completed: true,
+        }),
+      });
 
       if (patchPick.status !== 204) {
         console.log("Pick patch failed", patchPick.status);
@@ -218,6 +213,20 @@ app.on("ready", () => {
       if (patchPick.status === 204) {
         mainWindow.webContents.send("pick-success");
       }
+    }
+  });
+
+  ipcMain.handle("auto-accept", async () => {
+    const session = await fetchApi(`/lol-matchmaking/v1/ready-check/accept`, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (session.status !== 204) {
+      console.log("Auto accept failed", session.status);
+    }
+    
+    if (session.status === 204) {
+      mainWindow.webContents.send("auto-accept-success");
     }
   });
 
@@ -243,3 +252,13 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+const fetchApi = async (url: string, options: RequestInit) => {
+  return await fetch(`https://127.0.0.1:${lcuData.port}${url}`, {
+    ...options,
+    headers: {
+      ...options.headers,
+      Authorization: `Basic ${Buffer.from(`${lcuData.username}:${lcuData.password}`).toString("base64")}`,
+    },
+  });
+};

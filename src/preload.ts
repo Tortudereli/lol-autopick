@@ -8,4 +8,6 @@ contextBridge.exposeInMainWorld('lcuAPI', {
   autoPick: (banChampionId: number, pickChampionId: number) => ipcRenderer.invoke('auto-pick', banChampionId, pickChampionId),  
   pickSuccess: (callback: () => void) => ipcRenderer.on('pick-success', () => callback()),
   banSuccess: (callback: () => void) => ipcRenderer.on('ban-success', () => callback()),
+  autoAccept: () => ipcRenderer.invoke('auto-accept'),
+  autoAcceptSuccess: (callback: () => void) => ipcRenderer.on('auto-accept-success', () => callback()),
 });
