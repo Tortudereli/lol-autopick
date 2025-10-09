@@ -5,12 +5,16 @@
     <title>Hello World!</title>
   </head>
   <body>
-    <select name="champions" id="champions"></select>
     <label>
       <input type="checkbox" name="auto-pick" id="auto-pick" />
       Auto Pick
     </label>
-    <button id="exit-champ-select">Client'i kapatmadan şampiyon seçiminden çık</button>
+    <label>
+      <input type="checkbox" name="auto-ban" id="auto-ban" />
+      Auto Ban
+    </label>
+    <select name="banned-champions" id="banned-champions"></select>
+    <select name="picked-champions" id="picked-champions"></select>
     <script type="module" src="/src/renderer.ts"></script>
   </body>
 </html>

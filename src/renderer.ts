@@ -1,6 +1,7 @@
-const selectElement = document.getElementById("champions") as HTMLSelectElement;
 const autoPickElement = document.getElementById("auto-pick") as HTMLInputElement;
-const exitChampSelectElement = document.getElementById("exit-champ-select") as HTMLButtonElement;
+const autoBanElement = document.getElementById("auto-ban") as HTMLInputElement;
+const bannedChampionsElement = document.getElementById("banned-champions") as HTMLSelectElement;
+const pickedChampionsElement = document.getElementById("picked-champions") as HTMLSelectElement;
 
 async function init() {
   const ownedChampions = await window.lcuAPI.getOwnedChampions();
@@ -9,7 +10,7 @@ async function init() {
     const option = document.createElement("option");
     option.value = champion.id.toString();
     option.textContent = champion.name;
-    selectElement.appendChild(option);
+    pickedChampionsElement.appendChild(option);
   });
 }
 
@@ -21,7 +22,9 @@ autoPickElement.addEventListener("change", (e) => {
   if (isAutoPick) {
     console.log("Auto Pick");
     interval = setInterval(async () => {
-      const autoPickResponse = await window.lcuAPI.autoPick(266, 517);
+      const bannedChampionId = autoBanElement.checked ? parseInt(bannedChampionsElement.value) : 0;
+      const pickedChampionId = autoPickElement.checked ? parseInt(pickedChampionsElement.value) : 0;
+      const autoPickResponse = await window.lcuAPI.autoPick(bannedChampionId, pickedChampionId);
       console.log(autoPickResponse);
     }, 1000);
   } else {
@@ -29,6 +32,10 @@ autoPickElement.addEventListener("change", (e) => {
   }
 });
 
-exitChampSelectElement.addEventListener("click", () => {
-  window.lcuAPI.exitChampSelect();
+window.lcuAPI.pickSuccess(() => {
+  autoPickElement.checked = false;
+});
+
+window.lcuAPI.banSuccess(() => {
+  autoBanElement.checked = false;
 });

@@ -38,7 +38,8 @@ declare global {
     lcuAPI: {
       getOwnedChampions: () => Promise<Champion[]>;
       autoPick: (banChampionId: number, pickChampionId: number) => Promise<void>;
-      exitChampSelect: () => Promise<void>;
+      pickSuccess: (callback: () => void) => void;
+      banSuccess: (callback: () => void) => void;
     };
   }
 }
