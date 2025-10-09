@@ -5,9 +5,54 @@ const autoBanElement = document.getElementById("auto-ban") as HTMLInputElement;
 const bannedChampionsElement = document.getElementById("banned-champions") as HTMLSelectElement;
 const pickedChampionsElement = document.getElementById("picked-champions") as HTMLSelectElement;
 const autoAcceptElement = document.getElementById("auto-accept") as HTMLInputElement;
+const toastContainer = document.getElementById("toast-container") as HTMLDivElement;
+
+// Toast notification function
+function showToast(title: string, message: string, type: 'success' | 'pick-success' | 'ban-success', icon: string) {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  toast.innerHTML = `
+    <div class="toast-icon">${icon}</div>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+    <button class="toast-close">×</button>
+  `;
+  
+  toastContainer.appendChild(toast);
+  
+  // Close button functionality
+  const closeBtn = toast.querySelector('.toast-close') as HTMLButtonElement;
+  closeBtn.addEventListener('click', () => {
+    removeToast(toast);
+  });
+  
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+    removeToast(toast);
+  }, 5000);
+}
+
+function removeToast(toast: HTMLElement) {
+  toast.style.animation = 'slideOutRight 0.4s ease-out';
+  setTimeout(() => {
+    if (toast.parentElement) {
+      toast.parentElement.removeChild(toast);
+    }
+  }, 400);
+}
 
 async function init() {
   const ownedChampions = await window.lcuAPI.getOwnedChampions();
+  
+  // Add a default option
+  const defaultPickOption = document.createElement("option");
+  defaultPickOption.value = "";
+  defaultPickOption.textContent = "Şampiyon Seçin...";
+  pickedChampionsElement.appendChild(defaultPickOption);
+  
   ownedChampions.forEach((champion) => {
     const option = document.createElement("option");
     option.value = champion.id.toString();
@@ -15,13 +60,22 @@ async function init() {
     pickedChampionsElement.appendChild(option);
   });
 
-  pickedChampionsElement.value = ownedChampions[0].id.toString();
-  setBackground();
+  if (ownedChampions.length > 0) {
+    pickedChampionsElement.value = ownedChampions[0].id.toString();
+    setBackground();
+  }
 
   const champData = await fetch(
     "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-summary.json"
   ).then((res) => res.json());
-  champData.forEach((champion: any) => {
+  
+  // Add a default option for ban
+  const defaultBanOption = document.createElement("option");
+  defaultBanOption.value = "";
+  defaultBanOption.textContent = "Şampiyon Seçin...";
+  bannedChampionsElement.appendChild(defaultBanOption);
+  
+  champData.forEach((champion: { id: number; name: string }) => {
     const option = document.createElement("option");
     option.value = champion.id.toString();
     option.textContent = champion.name;
@@ -51,18 +105,36 @@ autoPickElement.addEventListener("change", (e) => {
 
 window.lcuAPI.pickSuccess(() => {
   autoPickElement.checked = false;
+  const championName = pickedChampionsElement.options[pickedChampionsElement.selectedIndex].text;
+  showToast(
+    '🎯 Şampiyon Seçildi!',
+    `${championName} başarıyla seçildi.`,
+    'pick-success',
+    '⚔️'
+  );
 });
 
 window.lcuAPI.banSuccess(() => {
   autoBanElement.checked = false;
+  const championName = bannedChampionsElement.options[bannedChampionsElement.selectedIndex].text;
+  showToast(
+    '🚫 Şampiyon Yasaklandı!',
+    `${championName} başarıyla yasaklandı.`,
+    'ban-success',
+    '❌'
+  );
 });
 
-pickedChampionsElement.addEventListener("change", (e) => {
+pickedChampionsElement.addEventListener("change", () => {
   setBackground();
 });
 
 const setBackground = () => {
-  window.document.body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://cdn.communitydragon.org/latest/champion/${pickedChampionsElement.value}/splash-art')`;
+  if (pickedChampionsElement.value && pickedChampionsElement.value !== "") {
+    window.document.body.style.backgroundImage = `url('https://cdn.communitydragon.org/latest/champion/${pickedChampionsElement.value}/splash-art')`;
+  } else {
+    window.document.body.style.backgroundImage = 'none';
+  }
 };
 
 let autoAcceptInterval: NodeJS.Timeout;
@@ -83,4 +155,10 @@ autoAcceptElement.addEventListener("change", (e) => {
 
 window.lcuAPI.autoAcceptSuccess(() => {
   console.log("Auto accept success");
+  showToast(
+    '✅ Maç Kabul Edildi!',
+    'Otomatik kabul başarılı.',
+    'success',
+    '🎮'
+  );
 });

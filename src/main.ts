@@ -219,6 +219,7 @@ app.on("ready", () => {
   ipcMain.handle("auto-accept", async () => {
     const session = await fetchApi(`/lol-matchmaking/v1/ready-check/accept`, {
       headers: { "Content-Type": "application/json" },
+      method: "POST",
     });
 
     if (session.status !== 204) {

@@ -2,23 +2,77 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
+    <title>LOL AutoPick - Tortudereli</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <label>
-      <input type="checkbox" name="auto-pick" id="auto-pick" />
-      Auto Pick
-    </label>
-    <label>
-      <input type="checkbox" name="auto-ban" id="auto-ban" />
-      Auto Ban
-    </label>
-    <label>
-      <input type="checkbox" name="auto-accept" id="auto-accept" />
-      Auto Accept
-    </label>
-    <select name="banned-champions" id="banned-champions"></select>
-    <select name="picked-champions" id="picked-champions"></select>
+    <div class="background-overlay"></div>
+    
+    <div class="container">
+      <header class="app-header">
+        <h1 class="app-title">
+          <span class="title-icon">⚔️</span>
+          LOL AutoPick
+        </h1>
+        <p class="app-subtitle">by Tortudereli</p>
+      </header>
+
+      <div class="content">
+        <div class="control-section">
+          <div class="control-group">
+            <div class="control-header">
+              <span class="control-icon">🎯</span>
+              <h2>Otomatik Seçim</h2>
+            </div>
+            <div class="select-wrapper">
+              <select name="picked-champions" id="picked-champions" class="champion-select"></select>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" name="auto-pick" id="auto-pick" />
+              <span class="slider"></span>
+              <span class="toggle-label">Auto Pick</span>
+            </label>
+          </div>
+
+          <div class="control-group">
+            <div class="control-header">
+              <span class="control-icon">🚫</span>
+              <h2>Otomatik Yasaklama</h2>
+            </div>
+            <div class="select-wrapper">
+              <select name="banned-champions" id="banned-champions" class="champion-select"></select>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" name="auto-ban" id="auto-ban" />
+              <span class="slider"></span>
+              <span class="toggle-label">Auto Ban</span>
+            </label>
+          </div>
+
+          <div class="control-group">
+            <div class="control-header">
+              <span class="control-icon">✅</span>
+              <h2>Otomatik Kabul</h2>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" name="auto-accept" id="auto-accept" />
+              <span class="slider"></span>
+              <span class="toggle-label">Auto Accept</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="status-section" id="status-section">
+          <!-- Status messages will appear here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
     <script type="module" src="/src/renderer.ts"></script>
   </body>
 </html>
