@@ -90,7 +90,7 @@ const createWindow = () => {
         console.log("League of Legends kapandı");
       }
     });
-  }, 2000);
+  }, 5000);
 
   function startApp() {
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
@@ -104,18 +104,19 @@ const createWindow = () => {
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
       mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL + "/waiting-lol.html");
     } else {
-      mainWindow.loadFile(path.join(__dirname, `../../waiting-lol.html`));
+      mainWindow.loadFile(path.join(__dirname, `waiting-lol.html`));
     }
   }
 
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL + "/waiting-lol.html");
   } else {
-    mainWindow.loadFile(path.join(__dirname, `../../waiting-lol.html`));
+    mainWindow.loadFile(path.join(__dirname, `waiting-lol.html`));
   }
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
+  mainWindow.setMenuBarVisibility(false);
   mainWindow.maximize();
 };
 
@@ -225,7 +226,7 @@ app.on("ready", () => {
     if (session.status !== 204) {
       console.log("Auto accept failed", session.status);
     }
-    
+
     if (session.status === 204) {
       mainWindow.webContents.send("auto-accept-success");
     }
