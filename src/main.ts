@@ -74,7 +74,7 @@ const createWindow = () => {
     height: 600,
     minWidth: 800,
     minHeight: 600,
-    title: "LOL AutoPick - Tortudereli",
+    title: "LoL AutoPick - Tortudereli",
     icon: path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/app.ico`),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
