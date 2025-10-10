@@ -4,6 +4,8 @@ import { exec } from "node:child_process";
 import path from "node:path";
 import started from "electron-squirrel-startup";
 
+app.setAppUserModelId("com.tortudereli.lol-autopick");
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 interface ChampSelectAction {
@@ -73,6 +75,7 @@ const createWindow = () => {
     minWidth: 800,
     minHeight: 600,
     title: "LOL AutoPick - Tortudereli",
+    icon: path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/app.ico`),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
@@ -136,7 +139,7 @@ app.on("ready", () => {
   ipcMain.handle("get-owned-champions", async () => {
     const champions = await fetchApi("/lol-champions/v1/owned-champions-minimal", {
       headers: { "Content-Type": "application/json" },
-    })
+    });
     if (champions.status !== 200) {
       return [];
     }

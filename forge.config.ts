@@ -1,26 +1,38 @@
-import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import { FuseV1Options, FuseVersion } from "@electron/fuses";
 
-import type { ForgeConfig } from '@electron-forge/shared-types';
-import { FusesPlugin } from '@electron-forge/plugin-fuses';
-import { MakerDeb } from '@electron-forge/maker-deb';
-import { MakerRpm } from '@electron-forge/maker-rpm';
-import { MakerSquirrel } from '@electron-forge/maker-squirrel';
-import { MakerZIP } from '@electron-forge/maker-zip';
-import { VitePlugin } from '@electron-forge/plugin-vite';
+import type { ForgeConfig } from "@electron-forge/shared-types";
+import { FusesPlugin } from "@electron-forge/plugin-fuses";
+import { MakerDeb } from "@electron-forge/maker-deb";
+import { MakerRpm } from "@electron-forge/maker-rpm";
+import { MakerSquirrel } from "@electron-forge/maker-squirrel";
+import { MakerZIP } from "@electron-forge/maker-zip";
+import { VitePlugin } from "@electron-forge/plugin-vite";
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     // Electron Forge otomatik olarak platforma göre doğru uzantıyı ekler
     // Windows: icon.ico, macOS: icon.icns, Linux: icon.png
-    icon: './public/icon',
+    icon: "./public/app",
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
-    new MakerZIP({}, ['darwin']),
-    new MakerRpm({}),
-    new MakerDeb({}),
+    new MakerSquirrel({
+      setupExe: "LoL-AutoPick-Setup.exe",
+      setupIcon: "./public/app.ico",
+      iconUrl: "https://mrdemirtas.com/favicon.ico",
+    }),
+    new MakerZIP({}, ["darwin"]),
+    new MakerRpm({
+      options: {
+        icon: "/public/app.ico",
+      },
+    }),
+    new MakerDeb({
+      options: {
+        icon: "/public/app.ico",
+      },
+    }),
   ],
   plugins: [
     new VitePlugin({
@@ -29,20 +41,20 @@ const config: ForgeConfig = {
       build: [
         {
           // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
-          entry: 'src/main.ts',
-          config: 'vite.main.config.ts',
-          target: 'main',
+          entry: "src/main.ts",
+          config: "vite.main.config.ts",
+          target: "main",
         },
         {
-          entry: 'src/preload.ts',
-          config: 'vite.preload.config.ts',
-          target: 'preload',
+          entry: "src/preload.ts",
+          config: "vite.preload.config.ts",
+          target: "preload",
         },
       ],
       renderer: [
         {
-          name: 'main_window',
-          config: 'vite.renderer.config.ts',
+          name: "main_window",
+          config: "vite.renderer.config.ts",
         },
       ],
     }),
