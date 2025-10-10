@@ -7,6 +7,19 @@ const pickedChampionsElement = document.getElementById("picked-champions") as HT
 const autoAcceptElement = document.getElementById("auto-accept") as HTMLInputElement;
 const toastContainer = document.getElementById("toast-container") as HTMLDivElement;
 
+const pickedChampionsSearchElement = document.getElementById("picked-champions-search") as HTMLInputElement;
+const bannedChampionsSearchElement = document.getElementById("banned-champions-search") as HTMLInputElement;
+
+// Champion data interfaces
+interface Champion {
+  id: number;
+  name: string;
+}
+
+// Store all champions for filtering
+let allPickedChampions: Champion[] = [];
+let allBannedChampions: Champion[] = [];
+
 // Toast notification function
 function showToast(title: string, message: string, type: 'success' | 'pick-success' | 'ban-success', icon: string) {
   const toast = document.createElement('div');
@@ -44,24 +57,75 @@ function removeToast(toast: HTMLElement) {
   }, 400);
 }
 
+// Filter champions based on search input
+function filterChampions(selectElement: HTMLSelectElement, champions: Champion[], searchTerm: string, keepNoneFirst = false) {
+  const lowerSearchTerm = searchTerm.toLowerCase().trim();
+  
+  // Filter champions based on search term
+  const filteredChampions = champions.filter(champion => 
+    champion.name.toLowerCase().includes(lowerSearchTerm)
+  );
+  
+  // If keepNoneFirst is true, ensure "None" stays at the beginning
+  if (keepNoneFirst && filteredChampions.length > 0) {
+    const noneIndex = filteredChampions.findIndex(c => c.name === "None");
+    if (noneIndex > 0) {
+      const noneChamp = filteredChampions.splice(noneIndex, 1)[0];
+      filteredChampions.unshift(noneChamp);
+    }
+  }
+  
+  // Clear current options
+  selectElement.innerHTML = '';
+  
+  // Add filtered options
+  filteredChampions.forEach((champion) => {
+    const option = document.createElement("option");
+    option.value = champion.id.toString();
+    option.textContent = champion.name;
+    selectElement.appendChild(option);
+  });
+  
+  // If no results, show a message
+  if (filteredChampions.length === 0) {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "Şampiyon bulunamadı";
+    option.disabled = true;
+    selectElement.appendChild(option);
+  }
+}
+
+// Sort champions alphabetically, keeping "None" first for banned champions
+function sortChampions(champions: Champion[], keepNoneFirst = false): Champion[] {
+  const sorted = [...champions].sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+  
+  if (keepNoneFirst) {
+    const noneIndex = sorted.findIndex(c => c.name === "None");
+    if (noneIndex > 0) {
+      const noneChamp = sorted.splice(noneIndex, 1)[0];
+      sorted.unshift(noneChamp);
+    }
+  }
+  
+  return sorted;
+}
+
 async function init() {
   const ownedChampions = await window.lcuAPI.getOwnedChampions();
   
-  // Add a default option
-  const defaultPickOption = document.createElement("option");
-  defaultPickOption.value = "";
-  defaultPickOption.textContent = "Şampiyon Seçin...";
-  pickedChampionsElement.appendChild(defaultPickOption);
+  // Sort and store picked champions
+  allPickedChampions = sortChampions(ownedChampions);
   
-  ownedChampions.forEach((champion) => {
+  allPickedChampions.forEach((champion) => {
     const option = document.createElement("option");
     option.value = champion.id.toString();
     option.textContent = champion.name;
     pickedChampionsElement.appendChild(option);
   });
 
-  if (ownedChampions.length > 0) {
-    pickedChampionsElement.value = ownedChampions[0].id.toString();
+  if (allPickedChampions.length > 0) {
+    pickedChampionsElement.value = allPickedChampions[0].id.toString();
     setBackground();
   }
 
@@ -69,19 +133,32 @@ async function init() {
     "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-summary.json"
   ).then((res) => res.json());
   
-  // Add a default option for ban
-  const defaultBanOption = document.createElement("option");
-  defaultBanOption.value = "";
-  defaultBanOption.textContent = "Şampiyon Seçin...";
-  bannedChampionsElement.appendChild(defaultBanOption);
+  // Add "None" option first
+  const noneChampion: Champion = { id: -1, name: "None" };
+  const championsWithNone: Champion[] = [noneChampion, ...champData];
   
-  champData.forEach((champion: { id: number; name: string }) => {
+  // Sort and store banned champions (None will stay first)
+  allBannedChampions = sortChampions(championsWithNone, true);
+  
+  allBannedChampions.forEach((champion: Champion) => {
     const option = document.createElement("option");
     option.value = champion.id.toString();
     option.textContent = champion.name;
     bannedChampionsElement.appendChild(option);
   });
 }
+
+// Setup search functionality for picked champions
+pickedChampionsSearchElement.addEventListener("input", (e) => {
+  const searchTerm = (e.target as HTMLInputElement).value;
+  filterChampions(pickedChampionsElement, allPickedChampions, searchTerm);
+});
+
+// Setup search functionality for banned champions
+bannedChampionsSearchElement.addEventListener("input", (e) => {
+  const searchTerm = (e.target as HTMLInputElement).value;
+  filterChampions(bannedChampionsElement, allBannedChampions, searchTerm, true);
+});
 
 init();
 

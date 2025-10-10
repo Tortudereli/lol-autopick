@@ -24,10 +24,13 @@
           <div class="control-group">
             <div class="control-header">
               <span class="control-icon">🎯</span>
-              <h2>Otomatik Seçim</h2>
+              <h2>Auto Champion Pick</h2>
             </div>
             <div class="select-wrapper">
-              <select name="picked-champions" id="picked-champions" class="champion-select"></select>
+              <div class="search-wrapper">
+                <input type="text" id="picked-champions-search" class="champion-search" placeholder="🔍 Şampiyon ara...">
+              </div>
+              <select name="picked-champions" id="picked-champions" class="champion-select" size="6"></select>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" name="auto-pick" id="auto-pick" />
@@ -39,10 +42,13 @@
           <div class="control-group">
             <div class="control-header">
               <span class="control-icon">🚫</span>
-              <h2>Otomatik Yasaklama</h2>
+              <h2>Auto Champion Ban</h2>
             </div>
             <div class="select-wrapper">
-              <select name="banned-champions" id="banned-champions" class="champion-select"></select>
+              <div class="search-wrapper">
+                <input type="text" id="banned-champions-search" class="champion-search" placeholder="🔍 Şampiyon ara...">
+              </div>
+              <select name="banned-champions" id="banned-champions" class="champion-select" size="6"></select>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" name="auto-ban" id="auto-ban" />
@@ -54,7 +60,7 @@
           <div class="control-group">
             <div class="control-header">
               <span class="control-icon">✅</span>
-              <h2>Otomatik Kabul</h2>
+              <h2>Auto Match Accept</h2>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" name="auto-accept" id="auto-accept" />

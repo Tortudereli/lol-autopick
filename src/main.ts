@@ -6,6 +6,15 @@ import started from "electron-squirrel-startup";
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
+interface ChampSelectAction {
+  id: number;
+  type: "ban" | "pick";
+  actorCellId: number;
+  isInProgress: boolean;
+  championId: number;
+  completed: boolean;
+}
+
 const lcuData = {
   username: "riot",
   password: "",
@@ -96,7 +105,7 @@ const createWindow = () => {
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
       mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
     } else {
-      mainWindow.loadFile(path.join(__dirname, `../../index.html`));
+      mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
     }
   }
 
@@ -104,14 +113,14 @@ const createWindow = () => {
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
       mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL + "/waiting-lol.html");
     } else {
-      mainWindow.loadFile(path.join(__dirname, `waiting-lol.html`));
+      mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/waiting-lol.html`));
     }
   }
 
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL + "/waiting-lol.html");
   } else {
-    mainWindow.loadFile(path.join(__dirname, `waiting-lol.html`));
+    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/waiting-lol.html`));
   }
 
   // Open the DevTools.
@@ -152,8 +161,8 @@ app.on("ready", () => {
     let banActionIsInProgress = false;
     let pickActionIsInProgress = false;
 
-    sessionData.actions.forEach((action: any) => {
-      action.forEach(async (action: any) => {
+    sessionData.actions.forEach((actions: ChampSelectAction[]) => {
+      actions.forEach(async (action: ChampSelectAction) => {
         if (action.type === "ban" && action.actorCellId === sessionData.localPlayerCellId) {
           banActionId = action.id;
           banActionIsInProgress = action.isInProgress;

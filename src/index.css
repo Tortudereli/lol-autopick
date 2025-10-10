@@ -62,7 +62,6 @@ body {
 
 .title-icon {
   font-size: 42px;
-  filter: drop-shadow(0 0 10px rgba(200, 155, 60, 0.6));
 }
 
 .app-subtitle {
@@ -70,7 +69,6 @@ body {
   color: #a09b8c;
   font-weight: 500;
   letter-spacing: 2px;
-  text-transform: uppercase;
 }
 
 .content {
@@ -127,19 +125,53 @@ body {
   margin-bottom: 20px;
 }
 
-.champion-select {
+.search-wrapper {
+  margin-bottom: 12px;
+}
+
+.champion-search {
   width: 100%;
-  padding: 12px 16px;
+  padding: 10px 16px;
   background: rgba(10, 20, 40, 0.8);
   border: 2px solid rgba(200, 155, 60, 0.3);
   border-radius: 8px;
   color: #f0e6d2;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.champion-search::placeholder {
+  color: #a09b8c;
+  opacity: 0.7;
+}
+
+.champion-search:hover {
+  border-color: rgba(200, 155, 60, 0.6);
+  background: rgba(10, 20, 40, 0.95);
+}
+
+.champion-search:focus {
+  border-color: #c89b3c;
+  box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.2);
+}
+
+.champion-select {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(10, 20, 40, 0.8);
+  border: 2px solid rgba(200, 155, 60, 0.3);
+  border-radius: 8px;
+  color: #f0e6d2;
+  font-size: 15px;
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
   transition: all 0.3s ease;
   outline: none;
+  overflow-y: auto;
 }
 
 .champion-select:hover {
@@ -155,7 +187,44 @@ body {
 .champion-select option {
   background: #0a1428;
   color: #f0e6d2;
-  padding: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.champion-select option:hover {
+  background: rgba(200, 155, 60, 0.3);
+}
+
+.champion-select option:checked,
+.champion-select option[selected] {
+  background: linear-gradient(135deg, rgba(200, 155, 60, 0.6) 0%, rgba(200, 155, 60, 0.4) 100%);
+  color: #fff;
+  font-weight: 600;
+}
+
+.champion-select option[hidden] {
+  display: none;
+}
+
+/* Scrollbar styling for champion select */
+.champion-select::-webkit-scrollbar {
+  width: 8px;
+}
+
+.champion-select::-webkit-scrollbar-track {
+  background: rgba(10, 20, 40, 0.5);
+  border-radius: 4px;
+}
+
+.champion-select::-webkit-scrollbar-thumb {
+  background: rgba(200, 155, 60, 0.5);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.champion-select::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 155, 60, 0.8);
 }
 
 .toggle-switch {
