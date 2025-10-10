@@ -1,8 +1,8 @@
 {
   "name": "lol-autopick",
-  "productName": "lol-autopick",
+  "productName": "LoL AutoPick",
   "version": "1.0.0",
-  "description": "LOL AutoPick - Tortudereli",
+  "description": "LoL AutoPick - Tortudereli",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",

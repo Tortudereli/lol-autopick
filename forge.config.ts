@@ -11,6 +11,9 @@ import { VitePlugin } from '@electron-forge/plugin-vite';
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    // Electron Forge otomatik olarak platforma göre doğru uzantıyı ekler
+    // Windows: icon.ico, macOS: icon.icns, Linux: icon.png
+    icon: './public/icon',
   },
   rebuildConfig: {},
   makers: [

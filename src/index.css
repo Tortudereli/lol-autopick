@@ -11,7 +11,6 @@ body {
   background-repeat: no-repeat;
   background-color: #0a1428;
   height: 100vh;
-  overflow: hidden;
   color: #fff;
   position: relative;
   transition: background-image 0.5s ease-in-out;
@@ -208,22 +207,22 @@ body {
 }
 
 /* Scrollbar styling for champion select */
-.champion-select::-webkit-scrollbar {
+body::-webkit-scrollbar, .champion-select::-webkit-scrollbar {
   width: 8px;
 }
 
-.champion-select::-webkit-scrollbar-track {
+body::-webkit-scrollbar-track, .champion-select::-webkit-scrollbar-track {
   background: rgba(10, 20, 40, 0.5);
   border-radius: 4px;
 }
 
-.champion-select::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb, .champion-select::-webkit-scrollbar-thumb {
   background: rgba(200, 155, 60, 0.5);
   border-radius: 4px;
   transition: background 0.3s ease;
 }
 
-.champion-select::-webkit-scrollbar-thumb:hover {
+body::-webkit-scrollbar-thumb:hover, .champion-select::-webkit-scrollbar-thumb:hover {
   background: rgba(200, 155, 60, 0.8);
 }
 

@@ -137,13 +137,10 @@ app.on("ready", () => {
     const champions = await fetchApi("/lol-champions/v1/owned-champions-minimal", {
       headers: { "Content-Type": "application/json" },
     })
-      .then((res) => res.json())
-      .catch((err: Error) => {
-        console.log(err.message);
-        return [];
-      });
-
-    return champions;
+    if (champions.status !== 200) {
+      return [];
+    }
+    return await champions.json();
   });
 
   ipcMain.handle("auto-pick", async (_, banChampionId: number, pickChampionId: number) => {
