@@ -18,6 +18,7 @@
 **[LoL AutoPick Setup - İndir](https://github.com/Tortudereli/lol-autopick/releases/download/1.0.0/LoL-AutoPick-Setup.exe)**
 
 ## Yenilikler
+### v1.0.1
 - Şampiyon seçimi hazırlık aşamasında seçilen şampiyonu gösterme işlemine 7 saniyelik gecikme eklendi.
 
 ## ✨ Özellikler
