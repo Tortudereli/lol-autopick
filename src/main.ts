@@ -146,6 +146,7 @@ app.on("ready", () => {
     return await champions.json();
   });
 
+  let sessionId: string | null = null;
   ipcMain.handle("auto-pick", async (_, banChampionId: number, pickChampionId: number) => {
     const session = await fetchApi(`/lol-lobby-team-builder/champ-select/v1/session`, {
       headers: { "Content-Type": "application/json" },
@@ -170,17 +171,11 @@ app.on("ready", () => {
         if (action.type === "pick" && action.actorCellId === sessionData.localPlayerCellId) {
           pickActionId = action.id;
           pickActionIsInProgress = action.isInProgress;
-          if (action.championId === 0) {
-            const showPick = await fetchApi(`/lol-lobby-team-builder/champ-select/v1/session/actions/${action.id}`, {
-              headers: { "Content-Type": "application/json" },
-              method: "PATCH",
-              body: JSON.stringify({
-                championId: pickChampionId,
-              }),
-            });
-            if (showPick.status !== 204) {
-              console.log("Show pick patch failed", showPick.status);
-            }
+          if (action.championId === 0 && sessionId !== sessionData.id) {
+            sessionId = sessionData.id;
+            setTimeout(() => {
+              showPick(action.id, pickChampionId);
+            }, 7000);
           }
         }
       });
@@ -272,4 +267,18 @@ const fetchApi = async (url: string, options: RequestInit) => {
       Authorization: `Basic ${Buffer.from(`${lcuData.username}:${lcuData.password}`).toString("base64")}`,
     },
   });
+};
+
+const showPick = async (actionId: number, championId: number) => {
+  const showPick = await fetchApi(`/lol-lobby-team-builder/champ-select/v1/session/actions/${actionId}`, {
+    headers: { "Content-Type": "application/json" },
+    method: "PATCH",
+    body: JSON.stringify({ championId }),
+  });
+  if (showPick.status !== 204) {
+    console.log("Show pick patch failed", showPick.status);
+  }
+  if (showPick.status === 204) {
+    console.log("Show pick patch success");
+  }
 };
