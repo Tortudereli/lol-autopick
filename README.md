@@ -17,6 +17,9 @@
 
 **[LoL AutoPick Setup - Download](https://github.com/Tortudereli/lol-autopick/releases/download/1.0.0/LoL-AutoPick-Setup.exe)**
 
+## Changelog
+- A 7-second delay was added to showing the selected champion during the champion selection preparation stage.
+
 ## ✨ Features
 
 - **🎯 Auto Champion Pick**: Automatically picks your selected champion
