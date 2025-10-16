@@ -10,4 +10,6 @@ contextBridge.exposeInMainWorld('lcuAPI', {
   banSuccess: (callback: () => void) => ipcRenderer.on('ban-success', () => callback()),
   autoAccept: () => ipcRenderer.invoke('auto-accept'),
   autoAcceptSuccess: (callback: () => void) => ipcRenderer.on('auto-accept-success', () => callback()),
+  dodgeMatch: () => ipcRenderer.invoke('dodge-match'),
+  dodgeMatchSuccess: (callback: () => void) => ipcRenderer.on('dodge-match-success', () => callback()),
 });

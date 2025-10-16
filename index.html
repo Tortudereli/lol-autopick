@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <title>LoL AutoPick - Tortudereli</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div class="background-overlay"></div>
-    
+
     <div class="container">
       <header class="app-header">
         <h1 class="app-title">
@@ -28,7 +28,12 @@
             </div>
             <div class="select-wrapper">
               <div class="search-wrapper">
-                <input type="text" id="picked-champions-search" class="champion-search" placeholder="🔍 Şampiyon ara...">
+                <input
+                  type="text"
+                  id="picked-champions-search"
+                  class="champion-search"
+                  placeholder="🔍 Şampiyon ara..."
+                />
               </div>
               <select name="picked-champions" id="picked-champions" class="champion-select" size="6"></select>
             </div>
@@ -46,7 +51,12 @@
             </div>
             <div class="select-wrapper">
               <div class="search-wrapper">
-                <input type="text" id="banned-champions-search" class="champion-search" placeholder="🔍 Şampiyon ara...">
+                <input
+                  type="text"
+                  id="banned-champions-search"
+                  class="champion-search"
+                  placeholder="🔍 Şampiyon ara..."
+                />
               </div>
               <select name="banned-champions" id="banned-champions" class="champion-select" size="6"></select>
             </div>
@@ -60,13 +70,16 @@
           <div class="control-group">
             <div class="control-header">
               <span class="control-icon">✅</span>
-              <h2>Auto Match Accept</h2>
+              <h2>Auto Match Accept & Dodge</h2>
             </div>
-            <label class="toggle-switch">
-              <input type="checkbox" name="auto-accept" id="auto-accept" />
-              <span class="slider"></span>
-              <span class="toggle-label">Auto Accept</span>
-            </label>
+            <div class="control-group-content">
+              <label class="toggle-switch">
+                <input type="checkbox" name="auto-accept" id="auto-accept" />
+                <span class="slider"></span>
+                <span class="toggle-label">Auto Accept</span>
+              </label>
+              <button id="dodge-match" class="dodge-match-button">Dodge Match</button>
+            </div>
           </div>
         </div>
 

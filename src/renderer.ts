@@ -6,7 +6,7 @@ const bannedChampionsElement = document.getElementById("banned-champions") as HT
 const pickedChampionsElement = document.getElementById("picked-champions") as HTMLSelectElement;
 const autoAcceptElement = document.getElementById("auto-accept") as HTMLInputElement;
 const toastContainer = document.getElementById("toast-container") as HTMLDivElement;
-
+const dodgeMatchElement = document.getElementById("dodge-match") as HTMLInputElement;
 const pickedChampionsSearchElement = document.getElementById("picked-champions-search") as HTMLInputElement;
 const bannedChampionsSearchElement = document.getElementById("banned-champions-search") as HTMLInputElement;
 
@@ -21,10 +21,10 @@ let allPickedChampions: Champion[] = [];
 let allBannedChampions: Champion[] = [];
 
 // Toast notification function
-function showToast(title: string, message: string, type: 'success' | 'pick-success' | 'ban-success', icon: string) {
-  const toast = document.createElement('div');
+function showToast(title: string, message: string, type: "success" | "pick-success" | "ban-success", icon: string) {
+  const toast = document.createElement("div");
   toast.className = `toast ${type}`;
-  
+
   toast.innerHTML = `
     <div class="toast-icon">${icon}</div>
     <div class="toast-content">
@@ -33,15 +33,15 @@ function showToast(title: string, message: string, type: 'success' | 'pick-succe
     </div>
     <button class="toast-close">×</button>
   `;
-  
+
   toastContainer.appendChild(toast);
-  
+
   // Close button functionality
-  const closeBtn = toast.querySelector('.toast-close') as HTMLButtonElement;
-  closeBtn.addEventListener('click', () => {
+  const closeBtn = toast.querySelector(".toast-close") as HTMLButtonElement;
+  closeBtn.addEventListener("click", () => {
     removeToast(toast);
   });
-  
+
   // Auto remove after 5 seconds
   setTimeout(() => {
     removeToast(toast);
@@ -49,7 +49,7 @@ function showToast(title: string, message: string, type: 'success' | 'pick-succe
 }
 
 function removeToast(toast: HTMLElement) {
-  toast.style.animation = 'slideOutRight 0.4s ease-out';
+  toast.style.animation = "slideOutRight 0.4s ease-out";
   setTimeout(() => {
     if (toast.parentElement) {
       toast.parentElement.removeChild(toast);
@@ -58,26 +58,29 @@ function removeToast(toast: HTMLElement) {
 }
 
 // Filter champions based on search input
-function filterChampions(selectElement: HTMLSelectElement, champions: Champion[], searchTerm: string, keepNoneFirst = false) {
+function filterChampions(
+  selectElement: HTMLSelectElement,
+  champions: Champion[],
+  searchTerm: string,
+  keepNoneFirst = false
+) {
   const lowerSearchTerm = searchTerm.toLowerCase().trim();
-  
+
   // Filter champions based on search term
-  const filteredChampions = champions.filter(champion => 
-    champion.name.toLowerCase().includes(lowerSearchTerm)
-  );
-  
+  const filteredChampions = champions.filter((champion) => champion.name.toLowerCase().includes(lowerSearchTerm));
+
   // If keepNoneFirst is true, ensure "None" stays at the beginning
   if (keepNoneFirst && filteredChampions.length > 0) {
-    const noneIndex = filteredChampions.findIndex(c => c.name === "None");
+    const noneIndex = filteredChampions.findIndex((c) => c.name === "None");
     if (noneIndex > 0) {
       const noneChamp = filteredChampions.splice(noneIndex, 1)[0];
       filteredChampions.unshift(noneChamp);
     }
   }
-  
+
   // Clear current options
-  selectElement.innerHTML = '';
-  
+  selectElement.innerHTML = "";
+
   // Add filtered options
   filteredChampions.forEach((champion) => {
     const option = document.createElement("option");
@@ -85,12 +88,12 @@ function filterChampions(selectElement: HTMLSelectElement, champions: Champion[]
     option.textContent = champion.name;
     selectElement.appendChild(option);
   });
-  
+
   // If no results, show a message
   if (filteredChampions.length === 0) {
     const option = document.createElement("option");
     option.value = "";
-    option.textContent = "Şampiyon bulunamadı";
+    option.textContent = "Champion not found";
     option.disabled = true;
     selectElement.appendChild(option);
   }
@@ -98,25 +101,25 @@ function filterChampions(selectElement: HTMLSelectElement, champions: Champion[]
 
 // Sort champions alphabetically, keeping "None" first for banned champions
 function sortChampions(champions: Champion[], keepNoneFirst = false): Champion[] {
-  const sorted = [...champions].sort((a, b) => a.name.localeCompare(b.name, 'tr'));
-  
+  const sorted = [...champions].sort((a, b) => a.name.localeCompare(b.name, "tr"));
+
   if (keepNoneFirst) {
-    const noneIndex = sorted.findIndex(c => c.name === "None");
+    const noneIndex = sorted.findIndex((c) => c.name === "None");
     if (noneIndex > 0) {
       const noneChamp = sorted.splice(noneIndex, 1)[0];
       sorted.unshift(noneChamp);
     }
   }
-  
+
   return sorted;
 }
 
 async function init() {
   const ownedChampions = await window.lcuAPI.getOwnedChampions();
-  
+
   // Sort and store picked champions
   allPickedChampions = sortChampions(ownedChampions);
-  
+
   allPickedChampions.forEach((champion) => {
     const option = document.createElement("option");
     option.value = champion.id.toString();
@@ -132,14 +135,14 @@ async function init() {
   const champData = await fetch(
     "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-summary.json"
   ).then((res) => res.json());
-  
+
   // Add "None" option first
   const noneChampion: Champion = { id: -1, name: "None" };
   const championsWithNone: Champion[] = [noneChampion, ...champData];
-  
+
   // Sort and store banned champions (None will stay first)
   allBannedChampions = sortChampions(championsWithNone, true);
-  
+
   allBannedChampions.forEach((champion: Champion) => {
     const option = document.createElement("option");
     option.value = champion.id.toString();
@@ -183,23 +186,13 @@ autoPickElement.addEventListener("change", (e) => {
 window.lcuAPI.pickSuccess(() => {
   autoPickElement.checked = false;
   const championName = pickedChampionsElement.options[pickedChampionsElement.selectedIndex].text;
-  showToast(
-    '🎯 Şampiyon Seçildi!',
-    `${championName} başarıyla seçildi.`,
-    'pick-success',
-    '⚔️'
-  );
+  showToast("🎯 Champion Picked!", `${championName} successfully picked.`, "pick-success", "⚔️");
 });
 
 window.lcuAPI.banSuccess(() => {
   autoBanElement.checked = false;
   const championName = bannedChampionsElement.options[bannedChampionsElement.selectedIndex].text;
-  showToast(
-    '🚫 Şampiyon Yasaklandı!',
-    `${championName} başarıyla yasaklandı.`,
-    'ban-success',
-    '❌'
-  );
+  showToast("🚫 Champion Banned!", `${championName} successfully banned.`, "ban-success", "❌");
 });
 
 pickedChampionsElement.addEventListener("change", () => {
@@ -210,7 +203,7 @@ const setBackground = () => {
   if (pickedChampionsElement.value && pickedChampionsElement.value !== "") {
     window.document.body.style.backgroundImage = `url('https://cdn.communitydragon.org/latest/champion/${pickedChampionsElement.value}/splash-art')`;
   } else {
-    window.document.body.style.backgroundImage = 'none';
+    window.document.body.style.backgroundImage = "none";
   }
 };
 
@@ -232,10 +225,12 @@ autoAcceptElement.addEventListener("change", (e) => {
 
 window.lcuAPI.autoAcceptSuccess(() => {
   console.log("Auto accept success");
-  showToast(
-    '✅ Maç Kabul Edildi!',
-    'Otomatik kabul başarılı.',
-    'success',
-    '🎮'
-  );
+  showToast("✅ Match Accepted!", "Match accepted successfully.", "success", "🎮");
+});
+
+dodgeMatchElement.addEventListener("click", async () => await window.lcuAPI.dodgeMatch());
+
+window.lcuAPI.dodgeMatchSuccess(() => {
+  console.log("Dodge match success");
+  showToast("🚫 Match Dodged!", "Match dodged successfully.", "success", "🚫");
 });

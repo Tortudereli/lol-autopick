@@ -236,6 +236,25 @@ app.on("ready", () => {
     }
   });
 
+  ipcMain.handle("dodge-match", async () => {
+    const params = new URLSearchParams({
+      destination: "lcdsServiceProxy",
+      method: "call",
+      args: JSON.stringify(["", "teambuilder-draft", "quitV2", ""]),
+    });
+    const url = "/lol-login/v1/session/invoke?" + params.toString();
+    const dodgeMatch = await fetchApi(url, {
+      method: "POST",
+    });
+    if (dodgeMatch.status !== 200) {
+      console.log(dodgeMatch);
+      console.log("Dodge match failed", dodgeMatch.status);
+    }
+    if (dodgeMatch.status === 200) {
+      mainWindow.webContents.send("dodge-match-success");
+    }
+  });
+
   createWindow();
 });
 

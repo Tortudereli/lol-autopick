@@ -42,6 +42,8 @@ declare global {
       banSuccess: (callback: () => void) => void;
       autoAccept: () => Promise<void>;
       autoAcceptSuccess: (callback: () => void) => void;
+      dodgeMatch: () => Promise<void>;
+      dodgeMatchSuccess: (callback: () => void) => void;
     };
   }
 }
