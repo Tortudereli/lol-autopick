@@ -18,6 +18,8 @@
 **[LoL AutoPick Setup - Download](https://github.com/Tortudereli/lol-autopick/releases/download/v1.0.1/LoL-AutoPick-Setup.exe)**
 
 ## Changelog
+### v1.0.2
+- During champion selection, the ability to leave the lobby without closing the client (commonly known as 'dodging' in the community) has been added.
 ### v1.0.1
 - A 7-second delay was added to showing the selected champion during the champion selection preparation stage.
 

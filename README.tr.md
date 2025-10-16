@@ -18,6 +18,8 @@
 **[LoL AutoPick Setup - İndir](https://github.com/Tortudereli/lol-autopick/releases/download/v1.0.1/LoL-AutoPick-Setup.exe)**
 
 ## Yenilikler
+### v1.0.2
+- Şampiyon seçimi sırasında istemciyi kapatmadan oyunu bozma (halk arasında oyun dodge'lama olarak bilinir.) eklendi.
 ### v1.0.1
 - Şampiyon seçimi hazırlık aşamasında seçilen şampiyonu gösterme işlemine 7 saniyelik gecikme eklendi.
 
