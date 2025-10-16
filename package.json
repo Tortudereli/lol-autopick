@@ -1,7 +1,7 @@
 {
   "name": "lol-autopick",
   "productName": "LoL AutoPick",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "LoL AutoPick - Tortudereli",
   "main": ".vite/build/main.js",
   "scripts": {
