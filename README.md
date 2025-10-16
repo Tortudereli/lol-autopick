@@ -19,7 +19,7 @@
 
 ## Changelog
 ### v1.0.2
-- During champion selection, the ability to leave the lobby without closing the client (commonly known as 'dodging' in the community) has been added.
+- During champion selection, the ability to leave the lobby without closing the client (commonly known as 'dodging' in the community) has been added. The action might not happen with a single click. Click the button multiple times in succession to make sure it works.
 ### v1.0.1
 - A 7-second delay was added to showing the selected champion during the champion selection preparation stage.
 
