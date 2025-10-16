@@ -15,7 +15,7 @@
 
 ## 📥 Download
 
-**[LoL AutoPick Setup - Download](https://github.com/Tortudereli/lol-autopick/releases/download/v1.0.1/LoL-AutoPick-Setup.exe)**
+**[LoL AutoPick Setup - Download](https://github.com/Tortudereli/lol-autopick/releases/download/v1.0.2/LoL-AutoPick-Setup.exe)**
 
 ## Changelog
 ### v1.0.2
