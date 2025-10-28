@@ -1,14 +1,30 @@
 import "./index.css";
 
-const autoPickElement = document.getElementById("auto-pick") as HTMLInputElement;
+const autoPickElement = document.getElementById(
+  "auto-pick"
+) as HTMLInputElement;
 const autoBanElement = document.getElementById("auto-ban") as HTMLInputElement;
-const bannedChampionsElement = document.getElementById("banned-champions") as HTMLSelectElement;
-const pickedChampionsElement = document.getElementById("picked-champions") as HTMLSelectElement;
-const autoAcceptElement = document.getElementById("auto-accept") as HTMLInputElement;
-const toastContainer = document.getElementById("toast-container") as HTMLDivElement;
-const dodgeMatchElement = document.getElementById("dodge-match") as HTMLInputElement;
-const pickedChampionsSearchElement = document.getElementById("picked-champions-search") as HTMLInputElement;
-const bannedChampionsSearchElement = document.getElementById("banned-champions-search") as HTMLInputElement;
+const bannedChampionsElement = document.getElementById(
+  "banned-champions"
+) as HTMLSelectElement;
+const pickedChampionsElement = document.getElementById(
+  "picked-champions"
+) as HTMLSelectElement;
+const autoAcceptElement = document.getElementById(
+  "auto-accept"
+) as HTMLInputElement;
+const toastContainer = document.getElementById(
+  "toast-container"
+) as HTMLDivElement;
+const dodgeMatchElement = document.getElementById(
+  "dodge-match"
+) as HTMLInputElement;
+const pickedChampionsSearchElement = document.getElementById(
+  "picked-champions-search"
+) as HTMLInputElement;
+const bannedChampionsSearchElement = document.getElementById(
+  "banned-champions-search"
+) as HTMLInputElement;
 
 // Champion data interfaces
 interface Champion {
@@ -21,7 +37,12 @@ let allPickedChampions: Champion[] = [];
 let allBannedChampions: Champion[] = [];
 
 // Toast notification function
-function showToast(title: string, message: string, type: "success" | "pick-success" | "ban-success", icon: string) {
+function showToast(
+  title: string,
+  message: string,
+  type: "success" | "pick-success" | "ban-success",
+  icon: string
+) {
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
 
@@ -67,7 +88,9 @@ function filterChampions(
   const lowerSearchTerm = searchTerm.toLowerCase().trim();
 
   // Filter champions based on search term
-  const filteredChampions = champions.filter((champion) => champion.name.toLowerCase().includes(lowerSearchTerm));
+  const filteredChampions = champions.filter((champion) =>
+    champion.name.toLowerCase().includes(lowerSearchTerm)
+  );
 
   // If keepNoneFirst is true, ensure "None" stays at the beginning
   if (keepNoneFirst && filteredChampions.length > 0) {
@@ -100,8 +123,13 @@ function filterChampions(
 }
 
 // Sort champions alphabetically, keeping "None" first for banned champions
-function sortChampions(champions: Champion[], keepNoneFirst = false): Champion[] {
-  const sorted = [...champions].sort((a, b) => a.name.localeCompare(b.name, "tr"));
+function sortChampions(
+  champions: Champion[],
+  keepNoneFirst = false
+): Champion[] {
+  const sorted = [...champions].sort((a, b) =>
+    a.name.localeCompare(b.name, "tr")
+  );
 
   if (keepNoneFirst) {
     const noneIndex = sorted.findIndex((c) => c.name === "None");
@@ -165,34 +193,49 @@ bannedChampionsSearchElement.addEventListener("input", (e) => {
 
 init();
 
-let interval: NodeJS.Timeout;
+let pickedChampionId = 0;
 autoPickElement.addEventListener("change", (e) => {
-  if (interval) {
-    clearInterval(interval);
-  }
   const isAutoPick = (e.target as HTMLInputElement).checked;
-  if (isAutoPick) {
-    interval = setInterval(async () => {
-      const bannedChampionId = autoBanElement.checked ? parseInt(bannedChampionsElement.value) : 0;
-      const pickedChampionId = autoPickElement.checked ? parseInt(pickedChampionsElement.value) : 0;
-      const autoPickResponse = await window.lcuAPI.autoPick(bannedChampionId, pickedChampionId);
-      console.log(autoPickResponse);
-    }, 1000);
-  } else {
-    clearInterval(interval);
-  }
+  if (isAutoPick)
+    pickedChampionId = parseInt(pickedChampionsElement.value) || 0;
 });
+
+let bannedChampionId = 0;
+autoBanElement.addEventListener("change", (e) => {
+  const isAutoBan = (e.target as HTMLInputElement).checked;
+  if (isAutoBan) bannedChampionId = parseInt(bannedChampionsElement.value) || 0;
+});
+
+const autoPick = () => {
+  if (autoPickElement.checked || autoBanElement.checked) {
+    window.lcuAPI.autoPick(bannedChampionId, pickedChampionId);
+  }
+};
+
+setInterval(autoPick, 1000);
 
 window.lcuAPI.pickSuccess(() => {
   autoPickElement.checked = false;
-  const championName = pickedChampionsElement.options[pickedChampionsElement.selectedIndex].text;
-  showToast("🎯 Champion Picked!", `${championName} successfully picked.`, "pick-success", "⚔️");
+  const championName =
+    pickedChampionsElement.options[pickedChampionsElement.selectedIndex].text;
+  showToast(
+    "🎯 Champion Picked!",
+    `${championName} successfully picked.`,
+    "pick-success",
+    "⚔️"
+  );
 });
 
 window.lcuAPI.banSuccess(() => {
   autoBanElement.checked = false;
-  const championName = bannedChampionsElement.options[bannedChampionsElement.selectedIndex].text;
-  showToast("🚫 Champion Banned!", `${championName} successfully banned.`, "ban-success", "❌");
+  const championName =
+    bannedChampionsElement.options[bannedChampionsElement.selectedIndex].text;
+  showToast(
+    "🚫 Champion Banned!",
+    `${championName} successfully banned.`,
+    "ban-success",
+    "❌"
+  );
 });
 
 pickedChampionsElement.addEventListener("change", () => {
@@ -225,10 +268,18 @@ autoAcceptElement.addEventListener("change", (e) => {
 
 window.lcuAPI.autoAcceptSuccess(() => {
   console.log("Auto accept success");
-  showToast("✅ Match Accepted!", "Match accepted successfully.", "success", "🎮");
+  showToast(
+    "✅ Match Accepted!",
+    "Match accepted successfully.",
+    "success",
+    "🎮"
+  );
 });
 
-dodgeMatchElement.addEventListener("click", async () => await window.lcuAPI.dodgeMatch());
+dodgeMatchElement.addEventListener(
+  "click",
+  async () => await window.lcuAPI.dodgeMatch()
+);
 
 window.lcuAPI.dodgeMatchSuccess(() => {
   console.log("Dodge match success");

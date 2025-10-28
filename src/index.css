@@ -509,3 +509,26 @@ body::-webkit-scrollbar-thumb:hover,
     width: 100%;
   }
 }
+
+.dodge-match-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid rgba(200, 155, 60, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dodge-match-content h5 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f0e6d2;
+  border-bottom: 1px solid rgba(200, 155, 60, 0.2);
+  padding-bottom: 8px;
+}
+
+.dodge-match-content p {
+  font-size: 14px;
+  color: #a09b8c;
+}

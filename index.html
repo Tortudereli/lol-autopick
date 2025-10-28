@@ -5,7 +5,10 @@
     <title>LoL AutoPick - Tortudereli</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div class="background-overlay"></div>
@@ -35,7 +38,12 @@
                   placeholder="🔍 Şampiyon ara..."
                 />
               </div>
-              <select name="picked-champions" id="picked-champions" class="champion-select" size="6"></select>
+              <select
+                name="picked-champions"
+                id="picked-champions"
+                class="champion-select"
+                size="6"
+              ></select>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" name="auto-pick" id="auto-pick" />
@@ -58,7 +66,12 @@
                   placeholder="🔍 Şampiyon ara..."
                 />
               </div>
-              <select name="banned-champions" id="banned-champions" class="champion-select" size="6"></select>
+              <select
+                name="banned-champions"
+                id="banned-champions"
+                class="champion-select"
+                size="6"
+              ></select>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" name="auto-ban" id="auto-ban" />
@@ -78,7 +91,21 @@
                 <span class="slider"></span>
                 <span class="toggle-label">Auto Accept</span>
               </label>
-              <button id="dodge-match" class="dodge-match-button">Dodge Match</button>
+              <div class="dodge-match-content">
+                <button id="dodge-match" class="dodge-match-button">
+                  Dodge Match
+                </button>
+                <h5>TR</h5>
+                <p>
+                  Butona 1 defa tıklamak yeterli olmayabilir, ard arda birkaç
+                  kez tıklamanız gerekebilir.
+                </p>
+                <h5>EN</h5>
+                <p>
+                  Clicking the button once may not be enough, you may need to
+                  click it multiple times in succession.
+                </p>
+              </div>
             </div>
           </div>
         </div>
