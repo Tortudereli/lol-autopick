@@ -15,9 +15,11 @@
 
 ## 📥 Download
 
-**[LoL AutoPick Setup - Download](https://github.com/Tortudereli/lol-autopick/releases/download/v1.0.2/LoL-AutoPick-Setup.exe)**
+**[LoL AutoPick Setup - Download](https://github.com/Tortudereli/lol-autopick/releases/download/v1.0.3/LoL-AutoPick-Setup.exe)**
 
 ## Changelog
+### v1.0.3
+- The issue of being unable to perform Auto Ban without Auto Pick has been fixed.
 ### v1.0.2
 - During champion selection, the ability to leave the lobby without closing the client (commonly known as 'dodging' in the community) has been added. The action might not happen with a single click. Click the button multiple times in succession to make sure it works.
 ### v1.0.1

@@ -15,9 +15,11 @@
 
 ## 📥 İndirme
 
-**[LoL AutoPick Setup - İndir](https://github.com/Tortudereli/lol-autopick/releases/download/v1.0.2/LoL-AutoPick-Setup.exe)**
+**[LoL AutoPick Setup - İndir](https://github.com/Tortudereli/lol-autopick/releases/download/v1.0.3/LoL-AutoPick-Setup.exe)**
 
 ## Yenilikler
+### v1.0.3
+- Auto Pick açık olmadan Auto Ban yapamama sorunu giderildi.
 ### v1.0.2
 - Şampiyon seçimi sırasında istemciyi kapatmadan oyunu bozma (halk arasında oyun dodge'lama olarak bilinir.) eklendi. Tek tıklamada işlem gerçekleşmeyebilir. Ard arda butona tıklayarak çalışmasını sağlayın.
 ### v1.0.1
